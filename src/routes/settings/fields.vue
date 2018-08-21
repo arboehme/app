@@ -20,7 +20,7 @@
       </template>
     </v-header>
 
-    <label class="label">Collection Name</label>
+    <label class="label">{{ $t('collection_name') }}</label>
     <v-input
       type="text"
       class="normal"

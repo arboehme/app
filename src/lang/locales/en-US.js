@@ -52,6 +52,7 @@ export default {
   click_to_toggle_all_none: "Click to toggle entire column on/off",
   connection: "Connection",
   collection: "Collection",
+  collection_name: "Collection Name",
   collection_updated: "{collection} Collection Updated",
   collection_removed: "{collection} Collection Removed",
   collection_names_cannot_be_changed:
