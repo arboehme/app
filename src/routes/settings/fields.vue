@@ -88,11 +88,6 @@
 </template>
 
 <script>
-import { keyBy } from "lodash";
-import formatTitle from "@directus/format-title";
-import shortid from "shortid";
-import store from "../../store/";
-import api from "../../api.js";
 import NotFound from "../not-found.vue";
 import VFieldSetup from "../../components/field-setup.vue";
 
@@ -292,14 +287,10 @@ export default {
         return this.$api
           .updateField(this.collection, fieldInfo.field, fieldInfo)
           .then(res => res.data)
-          .then(savedFieldInfo => {
+          .then(() => {
             this.$store.dispatch("loadingFinished", id);
             this.editingField = false;
             this.fieldBeingEdited = null;
-            this.fields = this.fields.map(field => {
-              if (field.id === savedFieldInfo.id) return savedFieldInfo;
-              return field;
-            });
             this.$notify.confirm(
               this.$t("field_updated", {
                 field: this.$helpers.formatTitle(fieldInfo.field)
@@ -334,7 +325,6 @@ export default {
           this.$store.dispatch("loadingFinished", id);
           this.editingField = false;
           this.fieldBeingEdited = null;
-          this.fields = [...this.fields, savedFieldInfo];
           this.$notify.confirm(
             this.$t("field_created", {
               field: this.$helpers.formatTitle(fieldInfo.field)
@@ -371,7 +361,6 @@ export default {
         .deleteField(this.collection, fieldName)
         .then(() => {
           this.$store.dispatch("loadingFinished", id);
-          this.fields = this.fields.filter(({ field }) => field !== fieldName);
           this.removingField = false;
           this.fieldToBeRemoved = null;
           this.confirmFieldRemove = false;
