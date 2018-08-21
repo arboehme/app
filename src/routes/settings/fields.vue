@@ -144,6 +144,9 @@ export default {
   watch: {
     collection() {
       this.getItemCount();
+    },
+    fields() {
+      this.sortableFields = [...this.fields];
     }
   },
   computed: {
