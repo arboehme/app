@@ -83,6 +83,7 @@
       :collection-info="collectionInfo"
       :field-info="fieldBeingEdited"
       @close="editingField = false"
+      @save-relation="saveRelation"
       @save="setFieldSettings" />
   </div>
 </template>
@@ -348,6 +349,9 @@ export default {
             error
           });
         });
+    },
+    saveRelation(relationship) {
+      console.log(relationship);
     },
     startEditingField(field) {
       this.fieldBeingEdited = field;

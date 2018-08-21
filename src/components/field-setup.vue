@@ -67,11 +67,27 @@
       </form>
     </template>
 
-    <template slot="relationship" v-if="selectedInterfaceInfo">
-      <h1 class="style-0">{{ $t('relationship_setup') }}</h1>
-      <p>{{ $t('relationship_setup_copy', { relationship: $t(selectedInterfaceInfo.relationship) }) }}</p>
+    <template slot="relation" v-if="selectedInterfaceInfo">
+      <h1 class="style-0">{{ $t('relation_setup') }}</h1>
+      <p>{{ $t('relation_setup_copy', { relation: $t(selectedInterfaceInfo.relation) }) }}</p>
 
-      <form class="m2o" @submit.prevent v-if="selectedInterfaceInfo.relationship === 'm2o'">
+      <form class="m2o" @submit.prevent v-if="selectedInterfaceInfo.relation === 'm2o'">
+        <p class="related title">{{ $t('related_collection') }}</p>
+        <v-simple-select class="related collection" v-model="relation.collection_one">
+          <option
+            v-for="({ collection }) in collections"
+            :key="collection"
+            :value="collection">{{ collection }}</option>
+        </v-simple-select>
+        <v-simple-select class="related field" v-model="relation.field_one">
+          <option
+            v-for="({ field }) in fields(relation.collection_one)"
+            :key="field"
+            :value="field">{{ field }}</option>
+        </v-simple-select>
+
+        <i class="material-icons">arrow_forward</i>
+
         <p class="this title">{{ $t('this_collection') }}</p>
         <v-simple-select class="this collection" disabled :value="collectionInfo.collection">
           <option :value="collectionInfo.collection" checked>{{ collectionInfo.collection }}</option>
@@ -79,28 +95,12 @@
         <v-simple-select class="this field" disabled :value="field">
           <option :value="field" checked>{{ field }}</option>
         </v-simple-select>
-
-        <i class="material-icons">arrow_back</i>
-
-        <p class="related title">{{ $t('related_collection') }}</p>
-        <v-simple-select class="related collection" v-model="relationship.collection_b">
-          <option
-            v-for="({ collection }) in collections"
-            :key="collection"
-            :value="collection">{{ collection }}</option>
-        </v-simple-select>
-        <v-simple-select class="related field" v-model="relationship.field_b">
-          <option
-            v-for="({ field }) in fields(relationship.collection_b)"
-            :key="field"
-            :value="field">{{ field }}</option>
-        </v-simple-select>
       </form>
 
-      <form @submit.prevent v-else-if="selectedInterfaceInfo.relationship === 'o2m'">
+      <form @submit.prevent v-else-if="selectedInterfaceInfo.relation === 'o2m'">
       </form>
 
-      <form @submit.prevent v-else-if="selectedInterfaceInfo.relationship === 'm2m'">
+      <form @submit.prevent v-else-if="selectedInterfaceInfo.relation === 'm2m'">
       </form>
     </template>
 
@@ -193,14 +193,12 @@ export default {
       default_value: null,
       validation: null,
 
-      relationship: {
-        collection_a: this.collectionInfo.collection,
-        field_a: null,
-        collection_b: null,
-        field_b: null,
-        junction_collection: null,
-        junction_key_a: null,
-        junction_key_b: null
+      relation: {
+        collection_many: null,
+        collection_one: null,
+        field_many: null,
+        field_one: null,
+        junction_field: null
       }
     };
   },
@@ -216,7 +214,7 @@ export default {
     relational() {
       if (!this.selectedInterfaceInfo) return null;
 
-      return this.selectedInterfaceInfo.relationship != null;
+      return this.selectedInterfaceInfo.relation != null;
     },
     interfaceOptions() {
       if (!this.selectedInterfaceInfo) return null;
@@ -272,7 +270,7 @@ export default {
     },
     tabs() {
       const relational =
-        this.selectedInterfaceInfo && this.selectedInterfaceInfo.relationship;
+        this.selectedInterfaceInfo && this.selectedInterfaceInfo.relation;
 
       const tabs = {
         interface: {
@@ -285,8 +283,8 @@ export default {
       };
 
       if (relational) {
-        tabs.relationship = {
-          text: this.$t("relationship"),
+        tabs.relation = {
+          text: this.$t("relation"),
           disabled: this.schemaDisabled === true || !this.field
         };
       }
@@ -295,13 +293,7 @@ export default {
         this.interfaceName &&
         Object.keys(this.selectedInterfaceInfo.options).length > 0
       ) {
-        let disabled = false;
-
-        if (relational) {
-          disabled = this.relationship === null;
-        } else {
-          disabled = this.schemaDisabled === true || !this.field;
-        }
+        let disabled = this.schemaDisabled === true || !this.field;
 
         tabs.options = {
           text: this.$t("options"),
@@ -323,12 +315,6 @@ export default {
   },
   created() {
     this.useFieldInfo();
-
-    // Set the defaults for the relationship picker
-    this.relationship.collection_b = Object.keys(this.collections)[0];
-    this.relationship.field_b = Object.keys(
-      this.fields(this.relationship.collection_b)
-    )[0];
   },
   watch: {
     fieldInfo() {
@@ -336,6 +322,27 @@ export default {
     },
     interfaceName() {
       this.type = Object.keys(this.availableDatatypes)[0];
+
+      const relation =
+        this.selectedInterfaceInfo && this.selectedInterfaceInfo.relation;
+
+      if (relation) {
+        if (relation === "m2o") {
+          this.relation.collection_many = this.collectionInfo.collection;
+          this.relation.collection_one = Object.keys(this.collections)[0];
+          this.relation.field_one = Object.keys(
+            this.fields(this.relation.collection_one)
+          )[0];
+        }
+
+        if (relation === "o2m") {
+          this.relation.collection_one = this.collectionInfo.collection;
+          this.relation.collection_many = Object.keys(this.collections)[0];
+          this.relation.field_many = Object.keys(
+            this.fields(this.relation.collection_many)
+          )[0];
+        }
+      }
     },
     field(val) {
       this.field = val
@@ -347,7 +354,15 @@ export default {
         .replace(/^_+/, "") // Trim _ from start of text
         .replace(/_+$/, ""); // Trim _ from end of text
 
-      this.relationship.field_a = this.field;
+      const relation =
+        this.selectedInterfaceInfo && this.selectedInterfaceInfo.relation;
+      if (relation) {
+        if (relation === "m2o") {
+          this.relation.field_many = this.field;
+        } else if (relation === "o2m") {
+          this.relation.field_one = this.field;
+        }
+      }
     },
     type(datatype) {
       this.length = this.availableDatatypes[datatype];
@@ -363,13 +378,13 @@ export default {
           if (this.hasOptions === false) {
             this.saveField();
           }
-          if (this.selectedInterfaceInfo.relationship) {
-            this.activeTab = "relationship";
+          if (this.selectedInterfaceInfo.relation) {
+            this.activeTab = "relation";
           } else {
             this.activeTab = "options";
           }
           break;
-        case "relationship":
+        case "relation":
           this.activeTab = "options";
           break;
         case "options":
@@ -401,6 +416,15 @@ export default {
       };
 
       this.saving = true;
+
+      if (this.relational) {
+        const relation =
+          this.selectedInterfaceInfo && this.selectedInterfaceInfo.relation;
+
+        if (relation === "m2o" || relation === "o2m") {
+          this.$emit("save-relation", this.relation);
+        }
+      }
 
       this.$emit("save", fieldInfo);
     },
@@ -560,9 +584,9 @@ summary {
   margin-top: 40px;
   display: grid;
   grid-template-areas:
-    "this_title x rel_title"
-    "this_collection x rel_collection"
-    "this_field icon rel_field";
+    "rel_title x this_title"
+    "rel_collection x this_collection"
+    "rel_field icon this_field";
   grid-template-columns: 1fr 20px 1fr;
   grid-gap: 10px 0;
   justify-content: center;

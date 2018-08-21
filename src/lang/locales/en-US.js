@@ -255,11 +255,11 @@ export default {
   related_entries: "Has related entries",
   remove: "Remove",
   remove_related: "Remove Related Item",
-  relationship: "Relationship",
-  relationship_setup:
+  relation: "relation",
+  relation_setup:
     "Since this is a relational field, we need to map-out the related fields.",
-  relationship_setup_copy:
-    "There are different types of relational data, this interface uses one called {relationship}.",
+  relation_setup_copy:
+    "There are different types of relational data, this interface uses one called {relation}.",
   related_collection: "Related Collection",
   required: "Required",
   reset_preferences: "Reset all listing preferences",
