@@ -40,8 +40,8 @@
         </div>
       </div>
       <div class="body">
-        <draggable v-model="fields" @end="saveSort">
-          <div class="row" v-for="field in fields" :key="field.field" @click="startEditingField(field)">
+        <draggable v-model="sortableFields" @end="saveSort">
+          <div class="row" v-for="field in sortableFields" :key="field.field" @click="startEditingField(field)">
             <div class="drag"><i class="material-icons">drag_handle</i></div>
             <div>{{ $helpers.formatTitle(field.field) }}</div>
             <div>{{ ($store.state.extensions.interfaces[field.interface] && $store.state.extensions.interfaces[field.interface].name) || "--" }}</div>
@@ -112,6 +112,8 @@ export default {
   },
   data() {
     return {
+      sortableFields: [],
+
       saving: false,
 
       notFound: false,
@@ -137,6 +139,7 @@ export default {
   },
   created() {
     this.getItemCount();
+    this.sortableFields = [...this.fields];
   },
   watch: {
     collection() {
@@ -168,7 +171,7 @@ export default {
       };
     },
     fieldsWithSort() {
-      return this.fields.map((field, index) => ({
+      return this.sortableFields.map((field, index) => ({
         ...field,
         sort: index + 1
       }));
@@ -396,7 +399,12 @@ export default {
         .then(res => res.data)
         .then(fields => {
           this.$store.dispatch("loadingFinished", id);
-          this.fields = fields;
+          this.$store.dispatch("updateCollection", {
+            collection: this.collection,
+            edits: {
+              fields
+            }
+          });
         })
         .catch(error => {
           this.$store.dispatch("loadingFinished", id);
