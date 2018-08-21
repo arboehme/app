@@ -120,25 +120,30 @@ export default {
       const id = this.$helpers.shortid.generate();
       this.$store.dispatch("loadingStart", { id });
 
+      const defaultFields = [
+        {
+          type: "INT",
+          field: "id",
+          interface: "primary-key",
+          auto_increment: true,
+          primary_key: true,
+          length: 15
+        }
+      ];
+
       this.$api
         .createCollection({
           collection: this.newName,
           hidden: 0,
-          fields: [
-            {
-              type: "INT",
-              field: "id",
-              interface: "primary-key",
-              auto_increment: true,
-              primary_key: true,
-              length: 15
-            }
-          ]
+          fields: defaultFields
         })
         .then(res => res.data)
         .then(collection => {
           this.$store.dispatch("loadingFinished", id);
-          this.$store.dispatch("addCollection", collection);
+          this.$store.dispatch("addCollection", {
+            ...collection,
+            fields: defaultFields
+          });
           this.$router.push(`/settings/collections/${this.newName}`);
         })
         .catch(error => {
