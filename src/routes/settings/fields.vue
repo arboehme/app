@@ -119,9 +119,6 @@ export default {
     return {
       saving: false,
 
-      fields: null,
-      directusFields: null,
-
       notFound: false,
       error: false,
 
@@ -180,6 +177,22 @@ export default {
         ...field,
         sort: index + 1
       }));
+    },
+    fields() {
+      return Object.values(
+        this.$store.state.collections[this.collection].fields
+      )
+        .map(field => ({
+          ...field,
+          name: this.$helpers.formatTitle(field.field)
+        }))
+        .sort((a, b) => {
+          if (a.sort == null) return 1;
+          return a.sort > b.sort ? 1 : -1;
+        });
+    },
+    directusFields() {
+      return this.$store.state.collections.directus_collections.fields;
     }
   },
   methods: {
@@ -404,51 +417,6 @@ export default {
           });
         });
     }
-  },
-  beforeRouteEnter(to, from, next) {
-    const { collection } = to.params;
-
-    const id = shortid.generate();
-    store.dispatch("loadingStart", { id });
-
-    return Promise.all([
-      api.getFields("directus_collections"),
-      api.getFields(collection, {
-        sort: "sort"
-      })
-    ])
-      .then(([directusRes, fieldsRes]) => ({
-        directusFields: directusRes.data,
-        fields: fieldsRes.data
-      }))
-      .then(({ directusFields, fields }) => {
-        store.dispatch("loadingFinished", id);
-        next(vm => {
-          vm.$data.directusFields = keyBy(
-            directusFields.map(field => ({
-              ...field,
-              name: formatTitle(field.field)
-            })),
-            "field"
-          );
-
-          vm.$data.fields = fields
-            .map(field => ({
-              ...field,
-              name: formatTitle(field.field)
-            }))
-            .sort((a, b) => {
-              if (a.sort == null) return 1;
-              return a.sort > b.sort ? 1 : -1;
-            });
-        });
-      })
-      .catch(error => {
-        store.dispatch("loadingFinished", id);
-        next(vm => {
-          vm.$data.error = error;
-        });
-      });
   }
 };
 </script>
