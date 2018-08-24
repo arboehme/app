@@ -269,68 +269,71 @@ export default {
 
       this.$set(this.edits, field, value);
     },
-    setFieldSettings(fieldInfo) {
+    setFieldSettings({ fieldInfo, relation }) {
       const existingField = fieldInfo.id != null;
+      const existingRelation = relation && relation.id != null;
+
+      const requests = [];
+
+      const id = this.$helpers.shortid.generate();
+      this.$store.dispatch("loadingStart", { id });
 
       if (existingField) {
-        const id = this.$helpers.shortid.generate();
-        this.$store.dispatch("loadingStart", { id });
+        requests.push(this.$api.updateField(this.collection, fieldInfo.field, fieldInfo));
+      } else {
+        delete fieldInfo.id;
+        fieldInfo.collection = this.collection;
+        requests.push(this.$api.createField(this.collection, fieldInfo));
+      }
 
-        return this.$api
-          .updateField(this.collection, fieldInfo.field, fieldInfo)
-          .then(res => res.data)
-          .then(savedFieldInfo => {
-            this.$store.dispatch("loadingFinished", id);
-            this.editingField = false;
-            this.fieldBeingEdited = null;
+      if (relation) {
+        if (existingRelation) {
+          requests.push(this.$api.updateRelation(relation.id, relation));
+        } else {
+          delete relation.id;
+          requests.push(this.$api.createRelation(relation));
+        }
+      }
+
+      return Promise.all(requests)
+        .then(([fieldRes, relationRes]) => ({ savedFieldInfo: fieldRes.data, savedRelationInfo: relationRes && relationRes.data }))
+        .then(({ savedFieldInfo, savedRelationInfo }) => {
+          this.$store.dispatch("loadingFinished", id);
+
+          if (existingField) {
             this.fields = this.fields.map(field => {
               if (field.id === savedFieldInfo.id) return savedFieldInfo;
               return field;
             });
+
             this.$notify.confirm(
               this.$t("field_updated", {
                 field: this.$helpers.formatTitle(fieldInfo.field)
               })
             );
+
             this.$store.dispatch("updateField", {
               collection: this.collection,
               field: fieldInfo
             });
-          })
-          .catch(error => {
-            this.$store.dispatch("loadingFinished", id);
-            this.$events.emit("error", {
-              notify: this.$t("something_went_wrong_body"),
-              error
+          } else {
+            this.fields = [...this.fields, savedFieldInfo];
+
+            this.$notify.confirm(
+              this.$t("field_created", {
+                field: this.$helpers.formatTitle(fieldInfo.field)
+              })
+            );
+
+            this.$store.dispatch("addField", {
+              collection: this.collection,
+              field: savedFieldInfo
             });
-          });
-      }
-
-      // Prevents the API from trying to search for the ID
-      delete fieldInfo.id;
-
-      fieldInfo.collection = this.collection;
-
-      const id = this.$helpers.shortid.generate();
-      this.$store.dispatch("loadingStart", { id });
-
-      return this.$api
-        .createField(this.collection, fieldInfo)
-        .then(res => res.data)
-        .then(savedFieldInfo => {
-          this.$store.dispatch("loadingFinished", id);
+          }
+        })
+        .then(() => {
           this.editingField = false;
           this.fieldBeingEdited = null;
-          this.fields = [...this.fields, savedFieldInfo];
-          this.$notify.confirm(
-            this.$t("field_created", {
-              field: this.$helpers.formatTitle(fieldInfo.field)
-            })
-          );
-          this.$store.dispatch("addField", {
-            collection: this.collection,
-            field: savedFieldInfo
-          });
         })
         .catch(error => {
           this.$store.dispatch("loadingFinished", id);

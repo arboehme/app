@@ -404,7 +404,19 @@ export default {
 
       this.saving = true;
 
-      this.$emit("save", fieldInfo);
+      const result = {
+        fieldInfo,
+        relation: null
+      };
+
+      if (this.relation) {
+        if (this.relation === "m2o") {
+          result.relation = { ...this.relationInfo };
+          delete result.relation.field_one;
+        }
+      }
+
+      this.$emit("save", result);
     },
     useFieldInfo() {
       if (!this.fieldInfo) return;
