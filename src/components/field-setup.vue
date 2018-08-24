@@ -74,11 +74,11 @@
       <form v-if="relation === 'm2o'" class="single">
         <p>{{ $t('this_collection') }}</p>
 
-        <v-simple-select class="select" v-model="relationInfo.collection_many" disabled>
+        <v-simple-select class="select" :value="relationInfo.collection_many" disabled>
           <option selected :value="collectionInfo.collection">{{ collectionInfo.collection }}</option>
         </v-simple-select>
 
-        <v-simple-select class="select" v-model="relationInfo.field_many" disabled>
+        <v-simple-select class="select" :value="relationInfo.field_many" disabled>
           <option selected :value="field">{{ field }}</option>
         </v-simple-select>
 
@@ -93,8 +93,8 @@
             :value="collection">{{ collection }}</option>
         </v-simple-select>
 
-        <v-simple-select class="select" v-model="relationInfo.field_one" disabled>
-          <option selected :value="relationInfo.field_one">{{ relationInfo.field_one }}</option>
+        <v-simple-select class="select" :value="primaryKeyField.field" disabled>
+          <option selected :value="primaryKeyField.field">{{ primaryKeyField.field }}</option>
         </v-simple-select>
       </form>
 
@@ -390,13 +390,6 @@ export default {
     },
     type(datatype) {
       this.length = this.availableDatatypes[datatype];
-    },
-    "relationInfo.collection_one"(newVal) {
-      if (!this.relation) return;
-      this.relationInfo.field_one = this.$lodash.find(
-        this.collections[newVal].fields,
-        { primary_key: true }
-      ).field;
     }
   },
   methods: {
@@ -510,6 +503,36 @@ export default {
             this.$store.state.collections
           )[0].collection;
           this.relationInfo.field_one = this.$lodash.find(
+            Object.values(this.$store.state.collections)[0].fields,
+            { primary_key: true }
+          ).field;
+        }
+      } else if (this.relation === "o2m") {
+        const existingRelation = this.$store.getters.o2m(collection, field);
+
+        if (existingRelation) {
+          this.$lodash.forEach(existingRelation, (val, key) => {
+            if (key && val && key.startsWith("collection")) {
+              return this.$set(this.relationInfo, key, val.collection);
+            }
+
+            if (key && val && key.startsWith("field")) {
+              return this.$set(this.relationInfo, key, val.field);
+            }
+
+            if (val) {
+              this.$set(this.relationInfo, key, val);
+            }
+          });
+        } else {
+          this.relationInfo.collection_one = this.collectionInfo.collection;
+          this.relationInfo.field_one = this.field;
+
+          this.relationInfo.collection_many = Object.values(
+            this.$store.state.collections
+          )[0].collection;
+
+          this.relationInfo.field_many = this.$lodash.find(
             Object.values(this.$store.state.collections)[0].fields,
             { primary_key: true }
           ).field;
