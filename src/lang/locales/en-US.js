@@ -263,6 +263,7 @@ export default {
   relation_setup_copy:
     "There are different types of relational data, this interface uses one called {relation}.",
   related_entries: "Has related entries",
+  related_collection: "Related Collection",
   remove: "Remove",
   remove_related: "Remove Related Item",
   relationship: "Relationship",
@@ -313,6 +314,7 @@ export default {
   sign_out_confirm: "Are you sure you want to sign out?",
   sign_out_confirm_edits:
     "Are you sure you want to sign out? All unsaved changes will be lost.",
+  this_collection: "This Collection",
   to: "To",
   unsaved_changes_copy:
     "You have unsaved changes! Are you sure you want to leave this page?",
