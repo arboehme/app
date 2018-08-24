@@ -330,6 +330,14 @@ export default {
               field: savedFieldInfo
             });
           }
+
+          if (relation) {
+            if (existingRelation) {
+              this.$store.dispatch("updateRelation", savedRelationInfo);
+            } else {
+              this.$store.dispatch("addRelation", savedRelationInfo);
+            }
+          }
         })
         .then(() => {
           this.editingField = false;
