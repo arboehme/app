@@ -386,10 +386,22 @@ export default {
         if (this.relation === "m2o") {
           this.relationInfo.field_many = this.field;
         }
+
+        if (this.relation === "o2m") {
+          this.relationInfo.field_one = this.field;
+        }
       }
     },
     type(datatype) {
       this.length = this.availableDatatypes[datatype];
+    },
+    relationInfo: {
+      deep: true,
+      handler() {
+        if (this.relation === "o2m") {
+          this.getM2OID();
+        }
+      }
     }
   },
   methods: {
@@ -536,7 +548,23 @@ export default {
             Object.values(this.$store.state.collections)[0].fields,
             { primary_key: true }
           ).field;
+
+          this.getM2OID();
         }
+      }
+    },
+    getM2OID() {
+      const collection = this.relationInfo.collection_many;
+      const field = this.relationInfo.field_many;
+
+      const m2o = this.$store.getters.m2o(collection, field);
+
+      console.log("fetch m2o", m2o);
+
+      if (m2o) {
+        this.relationInfo.id = m2o.id;
+      } else {
+        this.relationInfo.id = null;
       }
     },
     fields(collection) {
