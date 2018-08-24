@@ -97,6 +97,39 @@
           <option selected :value="relationInfo.field_one">{{ relationInfo.field_one }}</option>
         </v-simple-select>
       </form>
+
+      <form v-if="relation === 'o2m'" class="single">
+        <p>{{ $t('this_collection') }}</p>
+
+        <v-simple-select class="select" :value="collectionInfo.collection" disabled>
+          <option selected :value="collectionInfo.collection">{{ collectionInfo.collection }}</option>
+        </v-simple-select>
+
+        <v-simple-select class="select" v-model="relationInfo.field_one">
+          <option
+            v-for="({ field }) in fields(collectionInfo.collection)"
+            :key="field"
+            :value="field">{{ field }}</option>
+        </v-simple-select>
+
+        <i class="material-icons">arrow_forward</i>
+
+        <p>{{ $t('related_collection') }}</p>
+
+        <v-simple-select class="select" v-model="relationInfo.collection_many">
+          <option
+            v-for="({ collection }) in collections"
+            :key="collection"
+            :value="collection">{{ collection }}</option>
+        </v-simple-select>
+
+        <v-simple-select class="select" v-model="relationInfo.field_many">
+          <option
+            v-for="({ field }) in fields(relationInfo.collection_many)"
+            :key="field"
+            :value="field">{{ field }}</option>
+        </v-simple-select>
+      </form>
     </template>
 
     <template slot="options">
@@ -373,14 +406,23 @@ export default {
           this.activeTab = "schema";
           break;
         case "schema":
-          if (this.hasOptions === false) {
-            this.saveField();
-          }
           if (this.relation) {
-            this.activeTab = "relation";
-          } else {
-            this.activeTab = "options";
+            return (this.activeTab = "relation");
           }
+
+          if (this.hasOptions === false) {
+            return this.saveField();
+          }
+
+          this.activeTab = "options";
+
+          break;
+        case "relation":
+          if (this.hasOptions === false) {
+            return this.saveField();
+          }
+
+          this.activeTab = "options";
           break;
         case "options":
         default:
@@ -469,6 +511,10 @@ export default {
           ).field;
         }
       }
+    },
+    fields(collection) {
+      if (!collection) return {};
+      return this.collections[collection].fields;
     }
   }
 };
