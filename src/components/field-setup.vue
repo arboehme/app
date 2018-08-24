@@ -559,8 +559,6 @@ export default {
 
       const m2o = this.$store.getters.m2o(collection, field);
 
-      console.log("fetch m2o", m2o);
-
       if (m2o) {
         this.relationInfo.id = m2o.id;
       } else {
