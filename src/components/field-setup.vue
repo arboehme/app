@@ -67,6 +67,11 @@
       </form>
     </template>
 
+    <template slot="relation" v-if="selectedInterfaceInfo && relation">
+      <h1 class="style-0">{{ $t('relation_setup') }}</h1>
+      <p>{{ $t('relation_setup_copy', { relation: $t(relation) }) }}</p>
+    </template>
+
     <template slot="options">
       <h1 class="style-0">{{ $t('almost_done_options') }}</h1>
       <p>{{ $t('almost_done_copy') }}</p>
@@ -118,11 +123,6 @@
       </form>
     </template>
 
-    <template slot="relation" v-if="selectedInterfaceInfo">
-      <h1 class="style-0">{{ $t('relation_setup') }}</h1>
-      <p>{{ $t('relation_setup_copy', { relation: $t(selectedInterfaceInfo.relation) }) }}</p>
-    </template>
-
   </v-modal>
 </template>
 
@@ -155,7 +155,41 @@ export default {
       hidden_list: false,
       length: null,
       default_value: null,
-      validation: null
+      validation: null,
+
+      relationInfo: {
+        id: null,
+        collection_many: null,
+        field_many: null,
+
+        collection_one: null,
+        field_one: null,
+
+        junction_field: null
+      },
+
+      relationInfoM2M: [
+        {
+          id: null,
+          collection_many: null,
+          field_many: null,
+
+          collection_one: null,
+          field_one: null,
+
+          junction_field: null
+        },
+        {
+          id: null,
+          collection_many: null,
+          field_many: null,
+
+          collection_one: null,
+          field_one: null,
+
+          junction_field: null
+        }
+      ]
     };
   },
   computed: {
@@ -193,9 +227,10 @@ export default {
 
       return this.interfaces[this.interfaceName].datatypes;
     },
-    relational() {
+    relation() {
       if (!this.selectedInterfaceInfo) return null;
-      return this.selectedInterfaceInfo.relation != null;
+      if (!this.selectedInterfaceInfo.relation == null) return null;
+      return this.selectedInterfaceInfo.relation;
     },
     buttons() {
       let disabled = false;
@@ -228,7 +263,7 @@ export default {
         }
       };
 
-      if (this.relational) {
+      if (this.relation) {
         tabs.relation = {
           text: this.$t("relation"),
           disabled: this.schemaDisabled === true || !this.field
@@ -260,6 +295,7 @@ export default {
   },
   created() {
     this.useFieldInfo();
+    this.initRelation();
   },
   watch: {
     fieldInfo() {
@@ -267,6 +303,8 @@ export default {
     },
     interfaceName() {
       this.type = Object.keys(this.availableDatatypes)[0];
+
+      this.initRelation();
     },
     field(val) {
       // Based on https://gist.github.com/mathewbyrne/1280286
@@ -334,6 +372,9 @@ export default {
 
       // 'interface' is a reserved word in JS, so we need to work around that
       this.interfaceName = this.fieldInfo.interface;
+    },
+    initRelation() {
+      if (!this.relation) return;
     }
   }
 };
