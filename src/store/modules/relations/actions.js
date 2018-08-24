@@ -1,5 +1,9 @@
 import api from "../../../api";
-import { SET_RELATIONS, ADD_RELATION, UPDATE_RELATION } from "../../mutation-types";
+import {
+  SET_RELATIONS,
+  ADD_RELATION,
+  UPDATE_RELATION
+} from "../../mutation-types";
 
 export function getRelations({ commit }) {
   return api

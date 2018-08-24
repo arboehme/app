@@ -279,7 +279,9 @@ export default {
       this.$store.dispatch("loadingStart", { id });
 
       if (existingField) {
-        requests.push(this.$api.updateField(this.collection, fieldInfo.field, fieldInfo));
+        requests.push(
+          this.$api.updateField(this.collection, fieldInfo.field, fieldInfo)
+        );
       } else {
         delete fieldInfo.id;
         fieldInfo.collection = this.collection;
@@ -296,7 +298,10 @@ export default {
       }
 
       return Promise.all(requests)
-        .then(([fieldRes, relationRes]) => ({ savedFieldInfo: fieldRes.data, savedRelationInfo: relationRes && relationRes.data }))
+        .then(([fieldRes, relationRes]) => ({
+          savedFieldInfo: fieldRes.data,
+          savedRelationInfo: relationRes && relationRes.data
+        }))
         .then(({ savedFieldInfo, savedRelationInfo }) => {
           this.$store.dispatch("loadingFinished", id);
 

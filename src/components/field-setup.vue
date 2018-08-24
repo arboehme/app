@@ -348,6 +348,12 @@ export default {
         .replace(/__+/g, "_") // Replace multiple _ with single _
         .replace(/^_+/, "") // Trim _ from start of text
         .replace(/_+$/, ""); // Trim _ from end of text
+
+      if (this.relation) {
+        if (this.relation === "m2o") {
+          this.relationInfo.field_many = this.field;
+        }
+      }
     },
     type(datatype) {
       this.length = this.availableDatatypes[datatype];
@@ -439,11 +445,17 @@ export default {
 
         if (existingRelation) {
           this.$lodash.forEach(existingRelation, (val, key) => {
-            if (key.startsWith("collection"))
+            if (key && val && key.startsWith("collection")) {
               return this.$set(this.relationInfo, key, val.collection);
-            if (key.startsWith("field"))
+            }
+
+            if (key && val && key.startsWith("field")) {
               return this.$set(this.relationInfo, key, val.field);
-            this.$set(this.relationInfo, key, val);
+            }
+
+            if (val) {
+              this.$set(this.relationInfo, key, val);
+            }
           });
         } else {
           this.relationInfo.collection_many = this.collectionInfo.collection;
