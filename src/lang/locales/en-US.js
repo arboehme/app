@@ -255,6 +255,10 @@ export default {
   readable_fields_copy: "Select the fields that the user can view",
   readonly: "Readonly",
   regex: "RegEx",
+  relation_setup:
+    "Since this is a relational field, we need to map-out the related fields.",
+  relation_setup_copy:
+    "There are different types of relational data, this interface uses one called {relation}.",
   related_entries: "Has related entries",
   remove: "Remove",
   remove_related: "Remove Related Item",

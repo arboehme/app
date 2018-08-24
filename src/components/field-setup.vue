@@ -118,6 +118,11 @@
       </form>
     </template>
 
+    <template slot="relation" v-if="selectedInterfaceInfo">
+      <h1 class="style-0">{{ $t('relation_setup') }}</h1>
+      <p>{{ $t('relation_setup_copy', { relation: $t(selectedInterfaceInfo.relation) }) }}</p>
+    </template>
+
   </v-modal>
 </template>
 
@@ -188,17 +193,18 @@ export default {
 
       return this.interfaces[this.interfaceName].datatypes;
     },
+    relational() {
+      if (!this.selectedInterfaceInfo) return null;
+      return this.selectedInterfaceInfo.relation != null;
+    },
     buttons() {
       let disabled = false;
-
       if (this.activeTab === "interface" && !this.interfaceName) {
         disabled = true;
       }
-
       if (this.activeTab === "schema" && !this.field) {
         disabled = true;
       }
-
       return {
         next: {
           disabled,
@@ -222,13 +228,21 @@ export default {
         }
       };
 
+      if (this.relational) {
+        tabs.relation = {
+          text: this.$t("relation"),
+          disabled: this.schemaDisabled === true || !this.field
+        };
+      }
+
       if (
         this.interfaceName &&
-        Object.keys(this.interfaces[this.interfaceName].options).length > 0
+        Object.keys(this.selectedInterfaceInfo.options).length > 0
       ) {
+        let disabled = this.schemaDisabled === true || !this.field;
         tabs.options = {
           text: this.$t("options"),
-          disabled: this.schemaDisabled === true || !this.field
+          disabled
         };
       }
 
