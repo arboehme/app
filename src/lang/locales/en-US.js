@@ -188,6 +188,9 @@ export default {
   loading: "Loading...",
   loading_more: "Loading more items...",
   login: "Log in",
+  m2m: "Many-to-Many (M2M)",
+  m2o: "Many-to-One (M2O)",
+  o2m: "One-to-Many (O2M)",
   name: "Name",
   name_field:
     "Let’s name this {field} field and configure how it will save data.",
