@@ -105,11 +105,8 @@
           <option selected :value="collectionInfo.collection">{{ collectionInfo.collection }}</option>
         </v-simple-select>
 
-        <v-simple-select class="select" v-model="relationInfo.field_one">
-          <option
-            v-for="({ field }) in fields(collectionInfo.collection)"
-            :key="field"
-            :value="field">{{ field }}</option>
+        <v-simple-select class="select" :value="primaryKeyField.field" disabled>
+          <option selected :value="primaryKeyField.field">{{ primaryKeyField.field }}</option>
         </v-simple-select>
 
         <i class="material-icons">arrow_forward</i>
@@ -356,6 +353,9 @@ export default {
         return true;
 
       return false;
+    },
+    primaryKeyField() {
+      return this.$lodash.find(this.collectionInfo.fields, { primary_key: true });
     }
   },
   created() {
@@ -461,6 +461,10 @@ export default {
         if (this.relation === "m2o") {
           result.relation = { ...this.relationInfo };
           delete result.relation.field_one;
+        }
+
+        if (this.relation === "o2m") {
+          result.relation = { ...this.relationInfo };
         }
       }
 
