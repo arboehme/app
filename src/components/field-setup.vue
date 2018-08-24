@@ -70,6 +70,12 @@
     <template slot="relation" v-if="selectedInterfaceInfo && relation">
       <h1 class="style-0">{{ $t('relation_setup') }}</h1>
       <p>{{ $t('relation_setup_copy', { relation: $t(relation) }) }}</p>
+
+      <form v-if="relation === 'm2o'" class="single">
+        <p>{{ $t('related_collection') }}</p>
+        <i class="material-icons">arrow_forward</i>
+        <p>{{ $t('this_collection') }}</p>
+      </form>
     </template>
 
     <template slot="options">
@@ -130,6 +136,10 @@
 export default {
   name: "v-field-setup",
   props: {
+    collectionInfo: {
+      type: Object,
+      required: true
+    },
     fieldInfo: {
       type: Object,
       required: true
@@ -375,6 +385,10 @@ export default {
     },
     initRelation() {
       if (!this.relation) return;
+
+      if (this.relation === "m2o") {
+        this.relationInfo.collection_many = this.collectionInfo.collection;
+      }
     }
   }
 };
