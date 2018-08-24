@@ -174,6 +174,7 @@ export default {
     "No Filtered Items | One Filtered Item | {count} Filtered Items",
   item_deleted: "Item Deleted",
   item_saved: "Item Saved",
+  junction_collection: "Junction Collection",
   extension_error: "There was a problem loading the {ext} extension.",
   extensions_missing: "No Extensions Found",
   extensions_missing_copy:

@@ -127,6 +127,46 @@
             :value="field">{{ field }}</option>
         </v-simple-select>
       </form>
+
+      <form v-if="relation === 'm2m'" class="full">
+        <p>{{ $t('this_collection') }}</p>
+
+        <v-simple-select class="select" :value="collectionInfo.collection" disabled>
+          <option selected :value="collectionInfo.collection">{{ collectionInfo.collection }}</option>
+        </v-simple-select>
+
+        <v-simple-select class="select" :value="primaryKeyField.field" disabled>
+          <option selected :value="primaryKeyField.field">{{ primaryKeyField.field }}</option>
+        </v-simple-select>
+
+        <i class="material-icons">arrow_forward</i>
+
+        <p>{{ $t('junction_collection') }}</p>
+
+        <v-simple-select class="select" :value="collectionInfo.collection" disabled>
+          <option selected :value="collectionInfo.collection">{{ collectionInfo.collection }}</option>
+        </v-simple-select>
+
+        <v-simple-select class="select" :value="primaryKeyField.field" disabled>
+          <option selected :value="primaryKeyField.field">{{ primaryKeyField.field }}</option>
+        </v-simple-select>
+
+        <v-simple-select class="select" :value="primaryKeyField.field" disabled>
+          <option selected :value="primaryKeyField.field">{{ primaryKeyField.field }}</option>
+        </v-simple-select>
+
+        <i class="material-icons">arrow_backward</i>
+
+        <p>{{ $t('related_collection') }}</p>
+
+        <v-simple-select class="select" :value="collectionInfo.collection" disabled>
+          <option selected :value="collectionInfo.collection">{{ collectionInfo.collection }}</option>
+        </v-simple-select>
+
+        <v-simple-select class="select" :value="primaryKeyField.field" disabled>
+          <option selected :value="primaryKeyField.field">{{ primaryKeyField.field }}</option>
+        </v-simple-select>
+      </form>
     </template>
 
     <template slot="options">
@@ -355,7 +395,9 @@ export default {
       return false;
     },
     primaryKeyField() {
-      return this.$lodash.find(this.collectionInfo.fields, { primary_key: true });
+      return this.$lodash.find(this.collectionInfo.fields, {
+        primary_key: true
+      });
     }
   },
   created() {
@@ -753,6 +795,72 @@ summary {
     grid-area: f;
     font-size: 20px;
     color: var(--light-gray);
+  }
+}
+
+.full {
+  margin-top: 40px;
+  display: grid;
+  grid-template-areas:
+    "a b c d e"
+    "f g h i j"
+    "k l m n o"
+    "p q r s t";
+  grid-template-columns: 1fr 20px 1fr 20px 1fr;
+  grid-gap: 10px 0;
+  justify-content: center;
+  align-items: center;
+
+  p:first-of-type {
+    grid-area: a;
+  }
+
+  p:nth-of-type(2) {
+    grid-area: c;
+  }
+
+  p:last-of-type {
+    grid-area: e;
+  }
+
+  .select {
+    &:first-of-type {
+      grid-area: f;
+    }
+
+    &:nth-of-type(2) {
+      grid-area: k;
+    }
+
+    &:nth-of-type(3) {
+      grid-area: h;
+    }
+
+    &:nth-of-type(4) {
+      grid-area: m;
+    }
+
+    &:nth-of-type(5) {
+      grid-area: r;
+    }
+
+    &:nth-of-type(6) {
+      grid-area: j;
+    }
+
+    &:nth-of-type(7) {
+      grid-area: t;
+    }
+  }
+
+  i {
+    grid-area: l;
+    font-size: 20px;
+    color: var(--light-gray);
+
+    &:last-of-type {
+      grid-area: s;
+    }
   }
 }
 </style>

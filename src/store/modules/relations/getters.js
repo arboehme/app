@@ -51,7 +51,8 @@ export function o2m(state, getters, { collections }) {
       return {
         collection_many: collections[result.collection_many],
         collection_one: collections[result.collection_one],
-        field_many: collections[result.collection_many].fields[result.field_many],
+        field_many:
+          collections[result.collection_many].fields[result.field_many],
         field_one: collections[result.collection_one].fields[result.field_one]
       };
     }
