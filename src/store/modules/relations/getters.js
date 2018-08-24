@@ -9,6 +9,7 @@ export function m2o(state, getters, { collections }) {
 
     if (result) {
       return {
+        id: result.id,
         collection_many: collections[result.collection_many],
         collection_one: collections[result.collection_one],
         field_many:

@@ -72,9 +72,30 @@
       <p>{{ $t('relation_setup_copy', { relation: $t(relation) }) }}</p>
 
       <form v-if="relation === 'm2o'" class="single">
-        <p>{{ $t('related_collection') }}</p>
-        <i class="material-icons">arrow_forward</i>
         <p>{{ $t('this_collection') }}</p>
+
+        <v-simple-select class="select" v-model="relationInfo.collection_many" disabled>
+          <option selected :value="collectionInfo.collection">{{ collectionInfo.collection }}</option>
+        </v-simple-select>
+
+        <v-simple-select class="select" v-model="relationInfo.field_many" disabled>
+          <option selected :value="field">{{ field }}</option>
+        </v-simple-select>
+
+        <i class="material-icons">arrow_backward</i>
+
+        <p>{{ $t('related_collection') }}</p>
+
+        <v-simple-select class="select" v-model="relationInfo.collection_one">
+          <option
+            v-for="({ collection }) in collections"
+            :key="collection"
+            :value="collection">{{ collection }}</option>
+        </v-simple-select>
+
+        <v-simple-select class="select" v-model="relationInfo.field_one" disabled>
+          <option selected :value="relationInfo.field_one">{{ relationInfo.field_one }}</option>
+        </v-simple-select>
       </form>
     </template>
 
@@ -173,9 +194,7 @@ export default {
         field_many: null,
 
         collection_one: null,
-        field_one: null,
-
-        junction_field: null
+        field_one: null
       },
 
       relationInfoM2M: [
@@ -203,6 +222,9 @@ export default {
     };
   },
   computed: {
+    collections() {
+      return this.$store.state.collections;
+    },
     interfaces() {
       return this.$store.state.extensions.interfaces;
     },
@@ -329,6 +351,13 @@ export default {
     },
     type(datatype) {
       this.length = this.availableDatatypes[datatype];
+    },
+    "relationInfo.collection_one"(newVal) {
+      if (!this.relation) return;
+      this.relationInfo.field_one = this.$lodash.find(
+        this.collections[newVal].fields,
+        { primary_key: true }
+      ).field;
     }
   },
   methods: {
@@ -341,7 +370,11 @@ export default {
           if (this.hasOptions === false) {
             this.saveField();
           }
-          this.activeTab = "options";
+          if (this.relation) {
+            this.activeTab = "relation";
+          } else {
+            this.activeTab = "options";
+          }
           break;
         case "options":
         default:
@@ -386,8 +419,31 @@ export default {
     initRelation() {
       if (!this.relation) return;
 
+      const collection = this.collectionInfo.collection;
+      const field = this.field;
+
       if (this.relation === "m2o") {
-        this.relationInfo.collection_many = this.collectionInfo.collection;
+        const existingRelation = this.$store.getters.m2o(collection, field);
+
+        if (existingRelation) {
+          this.$lodash.forEach(existingRelation, (val, key) => {
+            if (key.startsWith("collection"))
+              return this.$set(this.relationInfo, key, val.collection);
+            if (key.startsWith("field"))
+              return this.$set(this.relationInfo, key, val.field);
+            this.$set(this.relationInfo, key, val);
+          });
+        } else {
+          this.relationInfo.collection_many = this.collectionInfo.collection;
+          this.relationInfo.field_many = this.field;
+          this.relationInfo.collection_one = Object.values(
+            this.$store.state.collections
+          )[0].collection;
+          this.relationInfo.field_one = this.$lodash.find(
+            Object.values(this.$store.state.collections)[0].fields,
+            { primary_key: true }
+          ).field;
+        }
       }
     }
   }
@@ -530,5 +586,50 @@ summary {
   color: var(--accent);
   vertical-align: super;
   font-size: 7px;
+}
+
+.single {
+  margin-top: 40px;
+  display: grid;
+  grid-template-areas:
+    "a _ b"
+    "c _ d"
+    "e f g";
+  grid-template-columns: 1fr 20px 1fr;
+  grid-gap: 10px 0;
+  justify-content: center;
+  align-items: center;
+
+  p:first-of-type {
+    grid-area: a;
+  }
+
+  p:last-of-type {
+    grid-area: b;
+  }
+
+  .select {
+    &:first-of-type {
+      grid-area: c;
+    }
+
+    &:nth-of-type(2) {
+      grid-area: e;
+    }
+
+    &:nth-of-type(3) {
+      grid-area: d;
+    }
+
+    &:nth-of-type(4) {
+      grid-area: g;
+    }
+  }
+
+  i {
+    grid-area: f;
+    font-size: 20px;
+    color: var(--light-gray);
+  }
 }
 </style>
