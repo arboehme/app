@@ -49,6 +49,7 @@ export default {
   choose_one: "Choose one",
   choose_project: "Choose Project",
   choose_interface: "Choose an interface for how this data should be managed.",
+  clear: "Clear",
   click_to_toggle_all_none: "Click to toggle entire column on/off",
   connection: "Connection",
   collection: "Collection",
