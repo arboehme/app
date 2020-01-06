@@ -290,7 +290,10 @@
       "allow_create": "Allow Create",
       "allow_create_comment": "Allow the user to create a new item from this interface",
       "allow_select": "Allow Select",
-      "allow_select_comment": "Allow the user to select an existing item"
+      "allow_select_comment": "Allow the user to select an existing item",
+      "default_values": "Default values",
+      "default_values_comment": "Comma-separated list of default values from target collection",
+      "default_values_placeholder": "Please enter the IDs of the default values..."
     },
     "many-to-one": {
       "m2o": "Many to One",

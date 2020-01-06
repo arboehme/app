@@ -289,7 +289,10 @@
       "allow_create": "Aanmaken toestaan",
       "allow_create_comment": "Sta de gebruiker toe om een nieuw item te maken uit deze interface",
       "allow_select": "Selectie toestaan",
-      "allow_select_comment": "Laat de gebruiker een bestaand item selecteren"
+      "allow_select_comment": "Laat de gebruiker een bestaand item selecteren",
+      "default_values": "Default values",
+      "default_values_comment": "Comma-separated list of default values from target collection",
+      "default_values_placeholder": "Please enter the IDs of the default values..."
     },
     "many-to-one": {
       "m2o": "Many to One",
