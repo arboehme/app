@@ -293,7 +293,8 @@
       "allow_select_comment": "Allow the user to select an existing item",
       "default_values": "Default values",
       "default_values_comment": "Comma-separated list of default values from target collection",
-      "default_values_placeholder": "Please enter the IDs of the default values..."
+      "default_values_placeholder": "Please enter the IDs of the default values...",
+      "wrong_visible_fields": "The provided visible fields don't exist in the related collection."
     },
     "many-to-one": {
       "m2o": "Many to One",

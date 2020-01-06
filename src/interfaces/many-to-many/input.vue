@@ -4,6 +4,10 @@
       {{ $t("relationship_not_setup") }}
     </v-notice>
 
+    <v-notice v-else-if="visibleFields === false" color="warning" icon="warning">
+      {{ $t("interfaces.many-to-many.wrong_visible_fields") }}
+    </v-notice>
+
     <template v-else>
       <div v-if="items.length" class="table">
         <div class="header">
@@ -175,6 +179,8 @@ export default {
       if (this.relationSetup === false) return [];
       if (!this.options.fields) return [];
 
+      const relatedFields = this.relation.junction.collection_one.fields;
+
       let visibleFieldNames;
 
       if (Array.isArray(this.options.fields)) {
@@ -183,8 +189,16 @@ export default {
 
       visibleFieldNames = this.options.fields.split(",").map(val => val.trim());
 
+      // Check if all provided visible fields exist. Return false if not
+      const relatedFieldNames = Object.keys(relatedFields);
+
+      const allFieldsExist = visibleFieldNames.every(field => relatedFieldNames.includes(field));
+
+      if (allFieldsExist === false) {
+        return false;
+      }
+
       // Fields in the related collection (not the JT)
-      const relatedFields = this.relation.junction.collection_one.fields;
       const recursiveKey = _.get(this.relation, "junction.field_one.field", null);
 
       return visibleFieldNames.map(name => {
@@ -199,7 +213,11 @@ export default {
     },
 
     visibleFieldNames() {
-      return this.visibleFields.map(field => field.field);
+      if (this.visibleFields) {
+        return this.visibleFields.map(field => field.field);
+      }
+
+      return null;
     },
 
     // The name of the field that holds the primary key in the related (not JT) collection
