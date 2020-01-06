@@ -289,7 +289,7 @@
       "allow_create": "Oluşturmaya İzin Ver",
       "allow_create_comment": "Kullanıcının bu arayüzden yeni bir öğe oluşturmasına izin ver",
       "allow_select": "Seçime İzin Ver",
-      "allow_select_comment": "Kullanıcının mevcut bir öğeyi seçmesine izin ver"
+      "allow_select_comment": "Kullanıcının mevcut bir öğeyi seçmesine izin ver",
       "default_values": "Default values",
       "default_values_comment": "Comma-separated list of default values from target collection",
       "default_values_placeholder": "Please enter the IDs of the default values..."

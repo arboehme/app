@@ -289,7 +289,7 @@
       "allow_create": "Разрешить создание",
       "allow_create_comment": "Разрешить пользователю создавать новый элемент из этого интерфейса",
       "allow_select": "Разрешить выбор",
-      "allow_select_comment": "Разрешить пользователю выбрать существующий элемент"
+      "allow_select_comment": "Разрешить пользователю выбрать существующий элемент",
       "default_values": "Default values",
       "default_values_comment": "Comma-separated list of default values from target collection",
       "default_values_placeholder": "Please enter the IDs of the default values..."
