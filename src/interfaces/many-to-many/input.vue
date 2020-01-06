@@ -281,6 +281,16 @@ export default {
 
     // Set the initial set of items. Filter out any broken junction records
     this.items = (_.cloneDeep(this.value) || []).filter(item => item[this.junctionRelatedKey]);
+
+    if (!this.readonly && (!this.items || this.items.length === 0)) {
+      //...check whether default values are set
+      let defaultValues = this.options.default_values;
+      if (defaultValues) {
+        (async () => {
+          this.items = await this.loadItems(defaultValues.split(","));
+        })();
+      }
+    }
   },
 
   methods: {
@@ -395,24 +405,7 @@ export default {
       const newlyAddedItems = _.difference(primaryKeys, itemPrimaryKeys);
 
       if (newlyAddedItems.length > 0) {
-        const res = await this.$api.getItem(
-          this.relation.junction.collection_one.collection,
-          newlyAddedItems.join(","),
-          {
-            fields: "*.*.*"
-          }
-        );
-
-        const items = Array.isArray(res.data) ? res.data : [res.data];
-
-        const newJunctionRecords = items.map(nested => {
-          const tempKey = "$temp_" + shortid.generate();
-
-          return {
-            [this.junctionPrimaryKey]: tempKey,
-            [this.junctionRelatedKey]: nested
-          };
-        });
+        const newJunctionRecords = await this.loadItems(newlyAddedItems);
 
         this.items = [...this.items, ...newJunctionRecords];
       }
@@ -493,6 +486,27 @@ export default {
       });
 
       this.$emit("input", [...newValue, ...deletedJunctionRows]);
+    },
+
+    async loadItems(itemsToLoad) {
+      const res = await this.$api.getItem(
+        this.relation.junction.collection_one.collection,
+        itemsToLoad.join(","),
+        {
+          fields: "*.*.*"
+        }
+      );
+
+      const items = Array.isArray(res.data) ? res.data : [res.data];
+
+      return items.map(nested => {
+        const tempKey = "$temp_" + shortid.generate();
+
+        return {
+          [this.junctionPrimaryKey]: tempKey,
+          [this.junctionRelatedKey]: nested
+        };
+      });
     }
   }
 };
