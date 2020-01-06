@@ -30,6 +30,14 @@
       "comment": "$t:allow_select_comment",
       "interface": "toggle",
       "default": true
+    },
+    "default_values": {
+      "name": "$t:default_values",
+      "comment": "$t:default_values_comment",
+      "interface": "text-input",
+      "options": {
+        "placeholder": "$t:default_values_placeholder"
+      }
     }
   }
 }
