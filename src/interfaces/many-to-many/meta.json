@@ -30,6 +30,14 @@
       "comment": "$t:allow_select_comment",
       "interface": "switch",
       "default": true
-    }
+	},
+    "filters": {
+	   "name": "$t:filters",
+	   "comment": "$t:filters_comment",
+	   "interface": "text-input",
+	   "options": {
+	      "placeholder": "$t:filters_placeholder"
+	   }
+	}
   }
 }

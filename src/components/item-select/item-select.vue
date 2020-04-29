@@ -284,15 +284,12 @@ export default {
 			const params = {
 				limit: 200,
 				offset: options.offset,
-				meta: '*'
+				meta: '*',
+				...(this.filters.length > 0 ? formatFilters(this.filters) : {})
 			};
 
 			if (this.searchQuery.length > 0) {
 				params.q = this.searchQuery;
-			}
-
-			if (this.filters.length > 0) {
-				params.filters = formatFilters(this.filters);
 			}
 
 			if (this.collection === 'directus_files') {

@@ -109,7 +109,7 @@
 			v-if="selectExisting"
 			:fields="visibleFieldNames"
 			:collection="relation.junction.collection_one.collection"
-			:filters="[]"
+			:filters="filters"
 			:value="stagedSelection || selectionPrimaryKeys"
 			@input="stageSelection"
 			@done="closeSelection"
@@ -149,6 +149,7 @@
 
 <script>
 import mixin from '@directus/extension-toolkit/mixins/interface';
+import { parseFilters } from '@/helpers/format-filters';
 import { diff } from 'deep-object-diff';
 import shortid from 'shortid';
 import { get, find, orderBy, cloneDeep, mapValues, merge, difference } from 'lodash';
@@ -215,6 +216,14 @@ export default {
 
 		visibleFieldNames() {
 			return this.visibleFields.map(field => field.field);
+		},
+
+		filters() {
+			return (
+				(this.options.filters &&
+					parseFilters(this.options.filters.split(',').map(val => val.trim()))) ||
+				[]
+			);
 		},
 
 		// The name of the field that holds the primary key in the related (not JT) collection

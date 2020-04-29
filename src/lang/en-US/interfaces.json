@@ -295,7 +295,10 @@
 			"allow_create": "Allow Create",
 			"allow_create_comment": "Allow the user to create a new item from this interface",
 			"allow_select": "Allow Select",
-			"allow_select_comment": "Allow the user to select an existing item"
+			"allow_select_comment": "Allow the user to select an existing item",
+			"filters": "Filters",
+			"filters_comment": "Filter expressions (comma-separated) as described at https://docs.directus.io/api/query/filter.html",
+			"filters_placeholder": "Filters for items to provide"
 		},
 		"many-to-one": {
 			"m2o": "Many to One",

@@ -295,7 +295,10 @@
 			"allow_create": "Erstellen erlauben",
 			"allow_create_comment": "Dem Benutzer erlauben, ein neues Element aus dieser Schnittstelle zu erstellen",
 			"allow_select": "Auswahl erlauben",
-			"allow_select_comment": "Dem Benutzer erlauben, ein vorhandenes Element auszuwählen"
+			"allow_select_comment": "Dem Benutzer erlauben, ein vorhandenes Element auszuwählen",
+			"filters": "Filter",
+			"filters_comment": "Filterausdrücke (kommasepariert) wie beschrieben unter https://docs.directus.io/api/query/filter.html",
+			"filters_placeholder": "Filter für die angebotenen Einträge in der Beziehung"
 		},
 		"many-to-one": {
 			"m2o": "n:1-Beziehung",
